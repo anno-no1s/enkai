@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+  <head>
+    <meta charset="UTF-8" th:remove="tag">
+  </head>
+  <body>
+    <div layout:fragment="content" th:object="${event}" >
+      <h1 th:text="*{name}"></h1>
+      <div class="container" th:each="eventChat: *{chats}" th:object="${eventChat}">
+        <div class="card mb-3" style="max-width: 18rem;" th:classappend="${eventChat.isContributor(authUser)} ? 'bg-success text-light float-end' : 'bg-light float-start'">
+		  <div class="card-body">
+            <h6 class="card-text" th:text="*{user.email}"></h6>
+            <p class="card-text mb-1" th:text="*{body}"></p>
+            <p class="card-text"><small class="text-body-secondary" th:text="*{#dates.format(createdAt, 'yyyy年MM月dd日HH時mm分ss秒')}"></small></p>
+		  </div>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+      <form th:action="@{/admin/chats/create}" th:object="${chat}" method="post">
+		<ul th:if="${#fields.hasErrors()}" class="alert alert-danger" role="alert">
+          <li th:each="err : ${#fields.errors('*')}">
+            <span th:text="${err}"></span>
+          </li>
+        </ul>
+		<div class="d-grid gap-2 d-flex justify-content-center mb-3">
+		  <div class="form-group flex-grow-1" th:classappend="${#fields.hasErrors()} ? error">
+		    <input type="hidden" name="event" th:value="${event.id}">
+		    <input class="form-control" type="text" id="body" th:field="*{body}">
+		  </div>
+          <input class="btn btn-primary" type="submit" value="投稿">
+      	</div>
+	  </form>
+    </div>
+  </body>
+</html>
